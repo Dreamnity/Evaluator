@@ -1,6 +1,6 @@
 # Evaluator
 
-REPL similar to node that have few adventages
+REPL similar to node's REPL that have few adventages
 - View result in fullscreen.
 - Go through history of codes ran, with result saved.
 - Explore large result in peace with scroll.
@@ -8,4 +8,10 @@ REPL similar to node that have few adventages
 - It's CLI UI engine is wrote entirely from scratch, to ensure no bug persist from the past
 
 ## Installation
-Download and run `index.js` with node/bun(recommended)
+- Download `index.js`.\
+or
+- Clone the repo.
+
+## Usage
+Recommended to run in maximized terminal.\
+Run `index.js` with [bun](https://bun.sh)(recommended) or node.js
