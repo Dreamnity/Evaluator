@@ -1,3 +1,4 @@
+#!/usr/bin/env bun
 var line = '', cursor = 0, history = [], historyi = 0, backup = [], scroll = 0;
 // #region Console library
 const kEscape = "\x1b";
