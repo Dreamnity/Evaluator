@@ -1,5 +1,5 @@
 {
-  "name": "djstester",
+  "name": "evaluator",
   "module": "index.js",
   "type": "commonjs",
   "devDependencies": {
