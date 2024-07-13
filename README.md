@@ -1,15 +1,10 @@
-# djstester
+# Evaluator
 
-To install dependencies:
+REPL similar to node that have few adventages
+- View result in fullscreen.
+- Go through history of codes ran, with result saved.
+- Explore large result in peace with scroll.
+- No extra dependency, just a single javascript file.
 
-```bash
-bun install
-```
-
-To run:
-
-```bash
-bun run index.js
-```
-
-This project was created using `bun init` in bun v1.1.15. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+## Installation
+Download and run `index.js` with node/bun(recommended)
