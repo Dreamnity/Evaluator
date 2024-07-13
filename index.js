@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-var line = '', cursor = 0, history = [], historyi = 0, backup = [], scroll = 0;
+var line = '', cursor = 0, history = [], historyi = 0, backup = [], scroll = 0, _;
 // #region Console library
 const kEscape = "\x1b";
 const { inspect } = require('util');
@@ -40,7 +40,7 @@ function fakeLog(...dat) {
 function fakeError(...dat) {
   consoleLogs.push(...dat.map(e => typeof e !== 'string' ? inspect(e) : e).join(' ').split('\n'));
 }
-const context = { require, console: { log: fakeLog, error: fakeError } };
+const context = { require, console: { log: fakeLog, error: fakeError }, _ };
 vm.createContext(context);
 // #endregion
 
@@ -76,13 +76,15 @@ stdin.on('data', cb => {
   }
   if (c.charCodeAt(0) === 13) {
     try {
-      setObj(vm.runInContext(line, context));
+      context._ = _;
+      setObj(_ = vm.runInContext(line, context));
       objLines.push(...consoleLogs);
     } catch (e) {
       if (e?.stack) objLines = e.stack.split('\n');
       else setObj(e);
     }
     history.unshift([line, objLines]);
+    if (history.length > 50) history.pop();
     historyi = 0;
     scroll = Math.min(scroll, objLines.length);
     showObj(scroll);
