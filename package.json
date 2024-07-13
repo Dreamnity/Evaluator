@@ -1,7 +1,7 @@
 {
   "name": "djstester",
   "module": "index.js",
-  "type": "module",
+  "type": "commonjs",
   "devDependencies": {
     "@types/bun": "latest"
   },
