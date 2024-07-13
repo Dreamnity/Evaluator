@@ -99,7 +99,6 @@ stdin.on('data', cb => {
   }
   if (c === '\u001b[1;5B') {
     if (historyi > 0) historyi--;
-    show(10, JSON.stringify(backup));
     if (historyi === 0) {
       line = backup[0], objLines = backup[1];
       show(rows, '\r> ' + line.slice(-cols + 35) + promptsuffix);
@@ -122,21 +121,32 @@ stdin.on('data', cb => {
   }
   if (c === '\u001b[C') {
     if (cursor > 0) cursor--;
-    process.stdout.write(CSI`?25h` + CSI`${rows};${3 + line.length - cursor}H`);
+    fixCursor();
     return;
   }
   if (c === '\u001b[D') {
     if (cursor < line.length) cursor++;
-    process.stdout.write(CSI`?25h` + CSI`${rows};${3 + line.length - cursor}H`);
+    fixCursor();
     return;
   }
+  if (c === '\u001b[H' || c === '\u001b[5~') {
+    cursor = line.length;
+    fixCursor();
+    return;
+  }
+  if (c === '\u001b[F' || c === '\u001b[6~') {
+    cursor = 0;
+    fixCursor();
+    return;
+  }
+  if (c.startsWith('\u001b')) return fixCursor();
   if (c.charCodeAt(0) === 127) {
     if (!line) return;
     if (!line[line.length - cursor - 1]) return;
     line = line.split('').toSpliced(line.length - cursor - 1, 1).join('');
   } else line = line.split('').toSpliced(line.length - cursor, 0, c).join('');
   show(rows, '\r> ' + line.slice(-cols + 35) + promptsuffix);
-  process.stdout.write(CSI`?25h` + CSI`${rows};${3 + line.length - cursor}H`);
+  fixCursor();
 });
 function errorHandler(err) {
   setObj(err);
@@ -146,4 +156,7 @@ objLines = ['Welcome to Evaluator', 'Type javascript code below to get started.'
 showObj();
 process.on('uncaughtException', errorHandler);
 process.on('unhandledRejection', errorHandler);
+function fixCursor() {
+  process.stdout.write(CSI`?25h` + CSI`${rows};${3 + line.length - cursor}H`);
+}
 // #endregion
