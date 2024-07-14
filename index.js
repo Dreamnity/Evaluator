@@ -33,14 +33,22 @@ function showObj(offset = 0) {
 
 // #region Code Execution
 const vm = require('vm');
+const repl = require('repl');
 var consoleLogs = [];
-function fakeLog(...dat) {
+function log(...dat) {
   consoleLogs.push(...dat.map(e => typeof e !== 'string' ? inspect(e) : e).join(' ').split('\n'));
 }
-function fakeError(...dat) {
-  consoleLogs.push(...dat.map(e => typeof e !== 'string' ? inspect(e) : e).join(' ').split('\n'));
+const Console = {};
+for (const k of Object.keys(console)) Console[k] = log;
+var context = { require, console: Console, _ };
+if (typeof Bun !== "undefined" && repl?.context) {
+  context = repl.context;
+  context.console = Console;
+  context._ = _;
+} else if (repl?.builtinModules) {
+  for (const module of repl.builtinModules) context[module] = require(module);
+  context.console = Console;
 }
-const context = { require, console: { log: fakeLog, error: fakeError }, _ };
 vm.createContext(context);
 // #endregion
 
@@ -58,7 +66,8 @@ function processHistory() {
 // #region Main
 // show "Evaluator" with inversed color on top, as like title bar
 process.stdout.write("\u001bc");
-show(0, CSI`7m` + " Evaluator".padEnd(cols - 14) + 'Dreamnity OSS ');
+const title = CSI`7m` + " Evaluator".padEnd(cols - 14) + 'Dreamnity OSS ';
+show(0, title);
 const actions = ["Scroll ↑↓", "History Ctrl+↑↓", "Eval ↩"].map(e => CSI`7m` + e + CSI`0m`).join(' ');
 const promptsuffix = CSI`${rows};${cols - 31}H` + actions;
 show(rows, "> " + promptsuffix);
@@ -76,9 +85,10 @@ stdin.on('data', cb => {
   }
   if (c.charCodeAt(0) === 13) {
     try {
+      consoleLogs = [];
       context._ = _;
       setObj(_ = vm.runInContext(line, context));
-      objLines.push(...consoleLogs);
+      objLines.unshift(...consoleLogs);
     } catch (e) {
       if (e?.stack) objLines = e.stack.split('\n');
       else setObj(e);
