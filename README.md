@@ -15,3 +15,7 @@ or
 ## Usage
 Recommended to run in maximized terminal.\
 Run `index.js` with [bun](https://bun.sh)(recommended) or node.js
+
+## Todo
+- Switch from `node:vm` to a worker
+- Fix `console.log` colors and length
